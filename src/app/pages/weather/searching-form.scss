@@ -1,0 +1,73 @@
+@import "app/styles/index";
+
+.searching-form {
+  width: 100%;
+
+  .content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: $gutter * 2;
+    box-sizing: border-box;
+
+    .input {
+      input {
+        font-family: $primary-font-family;
+        max-width: 225px;
+        font-size: 14px;
+        background-color: $white;
+        border: 1px solid $grey;
+        border-radius: $border-radius;
+        cursor: default;
+        min-height: 38px;
+        transition: all 100ms;
+        box-sizing: border-box;
+        padding: $gutter / 4 $gutter;
+        width: 100%;
+        outline: 0 !important;
+
+        &:focus {
+          border-color: $contrast-5;
+          box-shadow: 0 0 0 1px $contrast-5;
+          background-color: $white;
+        }
+      }
+    }
+
+    .select {
+      text-align: left;
+      margin: 0 $gutter * 2;
+      width: 100%;
+      max-width: 225px;
+    }
+  }
+
+  .error {
+    color: $error-color;
+    flex:1;
+    align-self: center;
+  }
+
+  @media #{$small-and-down} {
+
+    .content {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .input {
+        width: 100%;
+        input {
+          max-width: 100%;
+        }
+      }
+
+      .select {
+        margin: $gutter * 2 0;
+        max-width: 100%;
+      }
+    }
+
+  }
+}

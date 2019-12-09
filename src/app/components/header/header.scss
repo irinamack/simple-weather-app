@@ -1,0 +1,18 @@
+@import "app/styles/index";
+
+.header {
+  background-color: $white;
+  box-shadow: 0 4px 20px 0 $grey;
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .header-content {
+    width: 100%;
+    max-width: $grid-width;
+    margin: $gutter * 2 auto;
+    display: flex;
+    align-items: center;
+  }
+}

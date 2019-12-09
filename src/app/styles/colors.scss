@@ -1,0 +1,19 @@
+$primary-color: #9a98a5;
+$secondary-color: #212235;
+
+$white: #ffffff;
+$grey: #ccc;
+$dark-grey: #9a98a5;
+
+$contrast-1: #4b72ca;
+$contrast-2: #6189e2;
+$contrast-3: #fad54a;
+$contrast-4: #ffe890;
+$contrast-5: #2684ff;
+$success-color: #7ed321;
+$error-color: #ef4056;
+
+$primary-gradient: linear-gradient(to right, $contrast-1, $contrast-2);
+$primary-gradient-inverted: linear-gradient(to right, $contrast-2, $contrast-1);
+$secondary-gradient: linear-gradient(to right, $contrast-3, $contrast-4);
+$secondary-gradient-inverted: linear-gradient(to right, $contrast-4, $contrast-3);

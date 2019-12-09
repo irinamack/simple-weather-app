@@ -1,0 +1,28 @@
+@import 'app/styles/index';
+
+@include import-primary-font();
+
+:global {
+  html,
+  body,
+  #root {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: $primary-font-family;
+    font-size: 14px;
+  }
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background-color: $white;
+  font-family: $primary-font-family;
+
+  .content {
+    display: flex;
+    flex: 1;
+  }
+}

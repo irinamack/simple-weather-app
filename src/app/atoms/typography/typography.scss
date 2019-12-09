@@ -1,0 +1,70 @@
+@import "app/styles/index";
+
+$typography-colors: (
+        primary: $primary-color,
+        secondary: $secondary-color,
+        white: $white,
+        contrast: $contrast-1,
+        error: $error-color,
+);
+
+$typography-font-weights: (
+        \300: 300,
+        \400: 400,
+        \600: 600,
+);
+
+$typography-types-list:(
+        h1: 32px 600 54px,
+        h2: 24px 600 41px,
+        h3: 22px 600 37px,
+        h4: 18px 600 31px,
+        main: 14px 400 24px,
+        small: 12px 400 20px
+);
+
+@mixin typography-color-modifier {
+  @each $name, $color in $typography-colors {
+    &-#{$name} {
+      color: $color;
+    }
+  }
+}
+
+@mixin typography-font-weight-modifier {
+  @each $name, $weight in $typography-font-weights {
+    &-#{$name} {
+      font-weight: $weight;
+    }
+  }
+}
+
+@mixin typography-types-modifier {
+  @each $name, $attributes in $typography-types-list {
+    &-#{$name} {
+      font-size: nth($attributes, 1);
+      font-weight: nth($attributes, 2);
+      line-height: nth($attributes, 3);
+    }
+  }
+}
+
+.typography {
+  font-family: $primary-font-family;
+
+  &.type {
+    @include typography-types-modifier;
+  }
+
+  &.inline {
+    display: inline-block;
+  }
+
+  &.text {
+    @include typography-color-modifier;
+  }
+
+  &.font {
+    @include typography-font-weight-modifier;
+  }
+}
