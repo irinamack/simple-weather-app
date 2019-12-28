@@ -22,13 +22,11 @@ interface Props {
     containerElement: React.ReactElement;
     mapElement: React.ReactElement;
     latLng: Latitude;
-    onMapClick: (event: any) => any;
-    onToggleOpen: () => any;
+    onMapClick: (event: any) => void;
     weatherData: any;
-    isOpen: boolean;
 }
 
-const MapWithInfo: React.FunctionComponent<Props> = ((props: Props) => {
+const MapWithInfo = ((props: Props) => {
     const [isOpen, onToggleOpen] = React.useState(false);
     const toggleOpen = () => {
         onToggleOpen(!isOpen);
@@ -61,7 +59,7 @@ const MapWithInfo: React.FunctionComponent<Props> = ((props: Props) => {
     );
 });
 
-export default compose(
+export default compose<Props, Props>(
     withScriptjs,
     withGoogleMap,
 )(MapWithInfo);

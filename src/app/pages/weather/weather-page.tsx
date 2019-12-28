@@ -1,49 +1,22 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 
 import SearchingForm from 'app/pages/weather/searching-form';
-import WeatherCard from 'app/components/weather-card';
 import WeatherList from './weather-list';
 import MapWithInfo from './map-with-info';
-import useFetch from 'app/hooks/useFetch';
+import { useGlobalState } from 'app/context/use-global-state';
 import { apiKey, baseUrl, mapApiKey } from 'app/config';
+import { useFetch } from 'app/hooks/use-fetch';
+import { setGeolocation } from 'app/context/global-state-actions';
+import WeatherCard from 'app/components/weather-card';
 
 import * as styles from './weather-page.scss';
 
 const WeatherPage = () => {
-    const [latitude, setLatitude] = React.useState(null);
-    const [longitude, setLongitude] = React.useState(null);
-    const { data, lat, lon, err, inProgress, setUrl } = useFetch();
-    const [message, setMessage] = React.useState(null);
-
-    React.useEffect(() => {
-        if (latitude === null && longitude === null && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                setLatitude(position.coords.latitude);
-                setLongitude(position.coords.longitude);
-            });
-        }
-        latitude && longitude && updateWeatherData();
-    }, [latitude, longitude]);
-
-    const onMapClick = (event: any) => {
-        setLongitude(event.latLng.lng());
-        setLatitude(event.latLng.lat());
-        updateWeatherData();
-    };
-
-    const updateWeatherData =  () => {
-        const apiCallURL = `${baseUrl}data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&APPID=${apiKey}`;
-        setUrl(apiCallURL);
-    };
-
-    const handleSearchClick = (
-        e: React.BaseSyntheticEvent,
-        city: string,
-        country: string,
-    ) => {
-        e.preventDefault();
-        setUrl(`${baseUrl}data/2.5/weather?q=${city},${country}&appid=${apiKey}&units=metric`);
-    };
+    const [globalState, dispatch] = useGlobalState();
+    const { longitude, latitude, data } = globalState;
+    const getUrl = (lat: number, lon: number) => `${baseUrl}data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&APPID=${apiKey}`;
+    const { err, inProgress, setUrl } = useFetch(getUrl(latitude, longitude));
+    const [message, setMessage] = useState(null);
 
     const onSaveCity = (id: number) => {
         let cityArr;
@@ -78,34 +51,39 @@ const WeatherPage = () => {
         return setInterval(() => setMessage(null), 5000);
     };
 
-    const getWeatherCardContent = () => {
-        if (!data && inProgress && !err) { return <div className={styles['loading']}>Loading...</div>; }
-        if (!data) { return null; }
-
-        return <WeatherCard weatherData={data} onClick={onSaveCity} btnText="Save" message={message}/>;
+    const onMapClick = (event: any) => {
+        const {
+            latLng: {
+                lat,
+                lng,
+            },
+        } = event;
+        dispatch(setGeolocation(lat(), lng()));
+        setUrl(getUrl(lat(), lng()));
     };
+
+    if (!data && inProgress && !err) { return <div>Loading...</div>; }
+    if (!data) { return null; }
 
     return (
         <div className={styles['weather-page']}>
-            <SearchingForm
-                onSearchButtonClick={handleSearchClick}
-                error={err}
+            <SearchingForm />
+            <WeatherCard
+                btnText="save"
+                onClick={onSaveCity}
+                message={message}
+                data={data}
             />
-            {getWeatherCardContent()}
-            {!!lat && !!lon && (
-                <div className={styles['map-with-info']}>
-                    <MapWithInfo
-                        googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${mapApiKey}&v=3.exp&libraries=geometry,drawing,places`}
-                        loadingElement={<div style={{ height: `100%` }} />}
-                        containerElement={<div style={{ height: `400px` }} />}
-                        mapElement={<div style={{ height: `100%` }} />}
-                        latLng={{ lat, lng: lon }}
-                        onMapClick={onMapClick}
-                        weatherData={data}
-                    />
-                </div>
-            )}
-            <WeatherList/>
+            <MapWithInfo
+                googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${mapApiKey}&v=3.exp&libraries=geometry,drawing,places`}
+                loadingElement={<div style={{ height: `100%` }} />}
+                containerElement={<div style={{ height: `400px` }} />}
+                mapElement={<div style={{ height: `100%` }} />}
+                latLng={{ lat: latitude, lng: longitude }}
+                onMapClick={onMapClick}
+                weatherData={data}
+            />
+            <WeatherList />
         </div>
     );
 };

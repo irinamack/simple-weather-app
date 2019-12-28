@@ -6,28 +6,27 @@ import Typography from 'app/atoms/typography';
 import * as styles from './weather-card.scss';
 
 interface OwnProps {
-    weatherData: any;
     onClick: (id: number) => any;
     btnText: string;
     message?: string;
+    data: any;
 }
 
 type Props = OwnProps;
 
-const WeatherCard = ({ weatherData, onClick, btnText, message }: Props) => {
-    const { weather, name, main, id } = weatherData;
-    const icon = weather[0].icon;
-    const description = weather[0].main;
-    const temperature = main.temp;
+const WeatherCard = ({ onClick, btnText, data, message }: Props) => {
+    const icon = data.weather[0].icon;
+    const description = data.weather[0].main;
+    const temperature = data.main.temp;
 
-    const handleClick = () => onClick(id);
+    const handleClick = () => onClick(data.id);
 
     return (
         <div className={styles['weather-card']}>
             <div className={styles['city']}>
-                <Typography type="h1" color="secondary" dataTest="city-name">{name}</Typography>
+                <Typography type="h1" color="secondary" dataTest="city-name">{data.name}</Typography>
             </div>
-            <div className={styles['temperature']}>
+            <div>
                 <Typography type="h2" color="secondary">{Math.round(temperature)} &#8451;</Typography>
             </div>
             <img src={`http://openweathermap.org/img/wn/${icon}@2x.png`} />

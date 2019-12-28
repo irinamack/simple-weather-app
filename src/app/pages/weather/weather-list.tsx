@@ -1,42 +1,58 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 
-import useFetch from 'app/hooks/useFetch';
 import WeatherCard from 'app/components/weather-card';
 import { apiKey, baseUrl } from 'app/config';
 
 const WeatherList = () => {
-    const { data, err, inProgress, setUrl } = useFetch();
+    const [data, setData] = useState(null);
+    const [err, setError] = useState(null);
+    const [inProgress, setInProgress] = useState(false);
+    const getNewUrl = () => {
+        const localCityStorage = localStorage.getItem('cityStorage'); // Get saved city ids from local storage
+        const queryArr = localCityStorage ? JSON.parse(localCityStorage) : [];
 
-    const featchData = () => {
-        const cityStorage = localStorage.getItem('cityStorage'); // Get saved city ids from local storage
-        const queryArr = cityStorage ? JSON.parse(cityStorage) : [];
-
-        setUrl(`${baseUrl}data/2.5/group?id=${queryArr.join(',')}&appid=${apiKey}&units=metric`);
+        return  `${baseUrl}data/2.5/group?id=${queryArr.join(',')}&appid=${apiKey}&units=metric`;
     };
 
-    React.useEffect(() => {
-        featchData();
-    });
+    const fetchData = async (url: string) => {
+        try {
+            const res = await fetch(url);
+            const json = await res.json();
+            setInProgress(false);
+            if (json.cod >= 400) {
+                setError(json.message);
+                setData(null);
+
+                return;
+            }
+            setData(json);
+        } catch (error) {
+            setInProgress(false);
+            setError(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData(getNewUrl());
+    }, [getNewUrl()]);
 
     const removeCity = (id: number) => {
         const filteredStorage = JSON.parse(
             localStorage.getItem('cityStorage'),
         ).filter((cityId: number) => cityId !== id);
         localStorage.setItem('cityStorage', JSON.stringify(filteredStorage));
-
-        featchData();
+        fetchData(getNewUrl());
     };
 
     if (!data && inProgress && !err) { return <h2>Loading...</h2>; }
     if (!data) { return null; }
-    const { list } = data;
 
     return (
         <Row>
-            {list.map((weather: any) => (
+            {data.list.map((weather: any) => (
                 <Col xs={12} md={6} xl={4} key={weather.id} >
-                    <WeatherCard weatherData={weather} onClick={removeCity} btnText="Remove"/>
+                    <WeatherCard data={weather} onClick={removeCity} btnText="Remove"/>
                 </Col>
             ))}
         </Row>

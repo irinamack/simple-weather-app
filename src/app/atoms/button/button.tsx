@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import * as classnames from 'classnames';
 
 import * as styles from './button.scss';
@@ -8,67 +8,52 @@ interface OwnProps {
     onClick?: () => any,
     type?: 'submit' | 'button',
     disabled?: boolean,
-    loading?: boolean,
     design?: 'primary' | 'secondary',
     fullWidth?: boolean,
     dataTest?: string,
 }
 type Props = OwnProps & React.HTMLProps<HTMLButtonElement> & React.HTMLAttributes<HTMLButtonElement>;
 
-export default class Button extends React.PureComponent<Props> {
-    constructor(props: Props) {
-        super(props);
-        this.onClick = this.onClick.bind(this);
-    }
+const Button: React.FunctionComponent<Props> = (props: Props) => {
+    const {
+        disabled,
+        onClick,
+        type,
+        design,
+        text,
+        fullWidth,
+        dataTest,
+    } = props;
 
-    public static defaultProps: Partial<Props> = {
-        loading: false,
-        type: 'submit',
-        design: 'primary',
-        fullWidth: false,
-        disabled: false,
+    const handleClick = (event: React.SyntheticEvent) => {
+        onClick && onClick();
     };
 
-    onClick(event: React.SyntheticEvent) {
-        const {
-            disabled,
-            loading,
-            onClick,
-        } = this.props;
+    const className = classnames(
+        styles['button'],
+        design && styles[design],
+        disabled && styles['disabled'],
+        fullWidth && styles['fullWidth'],
+    );
 
-        if (!disabled && !loading) {
-            onClick && onClick();
-        }
-    }
+    return (
+        <button
+            data-test={dataTest}
+            type={type}
+            className={className}
+            onClick={handleClick}
+            disabled={disabled}
+        >
+            {text}
+        </button>
+    );
+};
 
-    render() {
-        const {
-            type,
-            disabled,
-            loading,
-            design,
-            text,
-            fullWidth,
-            dataTest,
-        } = this.props;
+Button.defaultProps = {
+    type: 'submit',
+    fullWidth: false,
+    design: 'primary',
+    disabled: false,
+};
 
-        const className = classnames(
-            styles['button'],
-            design && styles[design],
-            (disabled || loading) && styles['disabled'],
-            fullWidth && styles['fullWidth'],
-        );
-
-        return (
-            <button
-                data-test={dataTest}
-                type={type}
-                className={className}
-                onClick={this.onClick}
-                disabled={disabled}
-            >
-                {text}
-            </button>
-        );
-    }
-}
+export default React.memo(Button);
